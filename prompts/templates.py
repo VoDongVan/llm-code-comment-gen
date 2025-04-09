@@ -6,7 +6,7 @@ def zero_shot_prompt(code: str, type: str, prev_context=None, next_context=None)
     else:
         prompt = f"""Generate helpful comments for the following code snippet: {code}"""
     prompt = [{"role": "user", "content": prompt}]
-    return prompt
+    return [prompt]
 
 def few_shot_prompt(code: str, few_shot_examples: list, type: str, prev_context=None, next_context=None):
     prompt = f""""""
@@ -31,7 +31,7 @@ def few_shot_prompt(code: str, few_shot_examples: list, type: str, prev_context=
         prompt = f"""Here are examples of comments for code snippet:\n{prompt}.\n\n\
             Generate helpful comments for the following code snippet: {code}"""
     prompt = [{"role": "user", "content": prompt}]
-    return prompt
+    return [prompt]
 
 def cot_prompt(code: str, type: str, prev_context=None, next_context=None):
     if type == "class":
@@ -66,7 +66,7 @@ def cot_prompt(code: str, type: str, prev_context=None, next_context=None):
     prompt2 = f"""From the previous answers, generate helpful comments for the code"""
     prompt1 = [{"role": "user", "content": prompt1}]
     prompt2 = [{"role": "user", "content": prompt2}]
-    return prompt1, prompt2
+    return [prompt1, prompt2]
 
 def critique(code: str, type: str, prev_context=None, next_context=None):
     if type == "inline":
@@ -80,7 +80,7 @@ def critique(code: str, type: str, prev_context=None, next_context=None):
     prompt1 = [{"role": "user", "content": prompt1}]
     prompt2 = [{"role": "user", "content": prompt2}]
     prompt3 = [{"role": "user", "content": prompt3}]
-    return prompt1, prompt2, prompt3
+    return [prompt1, prompt2, prompt3]
 
 def expert(code: str, type: str, prev_context=None, next_context=None):
     prompt1 = f"""Describe an experienced software engineer that can write high-quality code comments in second person perspective:\n"""
@@ -92,4 +92,4 @@ def expert(code: str, type: str, prev_context=None, next_context=None):
         prompt2 = f"""Generate helpful comments for the following code snippet: {code}"""
     prompt1 = [{"role": "user", "content": prompt1}]
     prompt2 = [{"role": "user", "content": prompt2}]
-    return prompt1, prompt2
+    return [prompt1, prompt2]
