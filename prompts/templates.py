@@ -5,7 +5,7 @@ def zero_shot_prompt(code: str, type: str, prev_context=None, next_context=None)
             Generate helpful comments that should be put in the line"""
     else:
         prompt = f"""Generate helpful comments for the following code snippet: {code}"""
-    prompt = [{"role": "user", "content": prompt}]
+    prompt = {"role": "user", "content": prompt}
     return [prompt]
 
 def few_shot_prompt(code: str, few_shot_examples: list, type: str, prev_context=None, next_context=None):
@@ -30,7 +30,7 @@ def few_shot_prompt(code: str, few_shot_examples: list, type: str, prev_context=
             prompt += f"Comment:\n {comment}\n\n"
         prompt = f"""Here are examples of comments for code snippet:\n{prompt}.\n\n\
             Generate helpful comments for the following code snippet: {code}"""
-    prompt = [{"role": "user", "content": prompt}]
+    prompt = {"role": "user", "content": prompt}
     return [prompt]
 
 def cot_prompt(code: str, type: str, prev_context=None, next_context=None):
@@ -64,11 +64,11 @@ def cot_prompt(code: str, type: str, prev_context=None, next_context=None):
             5. Should comments be written here, between these 2 contexts?
             """
     prompt2 = f"""From the previous answers, generate helpful comments for the code"""
-    prompt1 = [{"role": "user", "content": prompt1}]
-    prompt2 = [{"role": "user", "content": prompt2}]
+    prompt1 = {"role": "user", "content": prompt1}
+    prompt2 = {"role": "user", "content": prompt2}
     return [prompt1, prompt2]
 
-def critique(code: str, type: str, prev_context=None, next_context=None):
+def critique_prompt(code: str, type: str, prev_context=None, next_context=None):
     if type == "inline":
         prompt1 = f"""This is the previous context of a line:\n{prev_context}\n\n.\
             This is the next context of a line:\n{next_context}\n\n.\
@@ -77,12 +77,12 @@ def critique(code: str, type: str, prev_context=None, next_context=None):
         prompt1 = f"""Generate helpful comments for the following code snippet: {code}"""
     prompt2 = f"""Review and find problems with your answer"""
     prompt3 = f"""Based on the problems, improve your answer"""
-    prompt1 = [{"role": "user", "content": prompt1}]
-    prompt2 = [{"role": "user", "content": prompt2}]
-    prompt3 = [{"role": "user", "content": prompt3}]
+    prompt1 = {"role": "user", "content": prompt1}
+    prompt2 = {"role": "user", "content": prompt2}
+    prompt3 = {"role": "user", "content": prompt3}
     return [prompt1, prompt2, prompt3]
 
-def expert(code: str, type: str, prev_context=None, next_context=None):
+def expert_prompt(code: str, type: str, prev_context=None, next_context=None):
     prompt1 = f"""Describe an experienced software engineer that can write high-quality code comments in second person perspective:\n"""
     if type == "inline":
         prompt2 = f"""This is the previous context of a line:\n{prev_context}\n\n.\
@@ -90,6 +90,21 @@ def expert(code: str, type: str, prev_context=None, next_context=None):
             Generate helpful comments that should be put in the line"""
     else:
         prompt2 = f"""Generate helpful comments for the following code snippet: {code}"""
-    prompt1 = [{"role": "user", "content": prompt1}]
-    prompt2 = [{"role": "user", "content": prompt2}]
+    prompt1 = {"role": "user", "content": prompt1}
+    prompt2 = {"role": "user", "content": prompt2}
     return [prompt1, prompt2]
+
+def prepare_prompt(code: str, data_type: str, few_shot_examples=None, prev_context=None, next_context=None, prompt_type="zero-shot"):
+    if prompt_type == "zero-shot":
+        prompts = zero_shot_prompt(code, data_type, prev_context, next_context)
+    elif prompt_type == "few-shot":
+        prompts = few_shot_prompt(code, data_type, few_shot_examples, prev_context, next_context)
+    elif prompt_type == "cot":
+        prompts = cot_prompt(code, data_type, prev_context, next_context)
+    elif prompt_type == "critique":
+        prompts = critique_prompt(code, data_type, prev_context, next_context)
+    elif prompt_type == "expert_prompt":
+        prompts = expert_prompt(code, data_type, prev_context, next_context)
+    else:
+        raise ValueError("Prompt strategy not supported")
+    return prompts
