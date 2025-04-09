@@ -3,7 +3,7 @@ from collections import defaultdict
 import json
 import os
 
-def preprocess_the_vault_function(
+def the_vault_function_to_json(
     split_set="train",
     languages=["java"],
     streaming=True,
