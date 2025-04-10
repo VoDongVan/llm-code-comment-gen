@@ -7,7 +7,7 @@ def load_model(model_name="codellama/CodeLlama-7b-Instruct-hf"):
     model.eval()
     return model, tokenizer
 
-def generate(model, tokenizer, message, max_new_tokens=512):
+def generate(model, tokenizer, message, max_new_tokens=200):
     device = next(model.parameters()).device
     prompt = tokenizer.apply_chat_template(message, tokenize=False, add_generation_prompt=True)
     inputs = tokenizer(prompt, return_tensors="pt").to(device)

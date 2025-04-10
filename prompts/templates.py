@@ -4,7 +4,7 @@ def format_inline_prompt(prev_context, next_context):
             Generate helpful comments that should be put in the line"""
 
 def format_code_prompt(code):
-    return f"""Generate helpful comments for the following code snippet: {code}"""
+    return f"""Generate helpful comments for the following code snippet:\n {code}"""
 
 def zero_shot_prompt(input: object, type: str):
     if type == "inline":
@@ -112,7 +112,7 @@ PROMPT_BUILDERS = {
     "few-shot": few_shot_prompt,
     "cot": lambda input, data_type, few_shot_examples: cot_prompt(input, data_type),
     "critique": lambda input, data_type, few_shot_examples: critique_prompt(input, data_type),
-    "expert_prompt": lambda input, data_type, few_shot_examples: expert_prompt(input, data_type)
+    "expert": lambda input, data_type, few_shot_examples: expert_prompt(input, data_type)
 }
 
 def prepare_prompt(input: object, data_type: str, few_shot_examples=None, prompt_type="zero-shot"):
