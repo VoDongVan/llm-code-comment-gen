@@ -2,10 +2,8 @@ import torch
 from transformers import AutoTokenizer, AutoModel
 
 def load_model(model_name="codellama/CodeLlama-7b-Instruct-hf"):
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModel.from_pretrained(model_name)
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    model.to(device)
+    tokenizer = AutoTokenizer.from_pretrained(model_name, device_map="auto")
+    model = AutoModel.from_pretrained(model_name, device_map="auto")
     model.eval()
     return model, tokenizer
 
