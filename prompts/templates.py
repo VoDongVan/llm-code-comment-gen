@@ -107,17 +107,15 @@ def expert_prompt(input: object, type: str):
     prompt2 = {"role": "user", "content": prompt2}
     return [prompt1, prompt2]
 
+PROMPT_BUILDERS = {
+    "zero-shot": lambda input, data_type, few_shot_examples: zero_shot_prompt(input, data_type),
+    "few-shot": few_shot_prompt,
+    "cot": lambda input, data_type, few_shot_examples: cot_prompt(input, data_type),
+    "critique": lambda input, data_type, few_shot_examples: critique_prompt(input, data_type),
+    "expert_prompt": lambda input, data_type, few_shot_examples: expert_prompt(input, data_type)
+}
+
 def prepare_prompt(input: object, data_type: str, few_shot_examples=None, prompt_type="zero-shot"):
-    if prompt_type == "zero-shot":
-        prompts = zero_shot_prompt(input, data_type)
-    elif prompt_type == "few-shot":
-        prompts = few_shot_prompt(input, data_type, few_shot_examples)
-    elif prompt_type == "cot":
-        prompts = cot_prompt(input, data_type)
-    elif prompt_type == "critique":
-        prompts = critique_prompt(input, data_type)
-    elif prompt_type == "expert_prompt":
-        prompts = expert_prompt(input, data_type)
-    else:
-        raise ValueError("Prompt strategy not supported")
-    return prompts
+    if prompt_type not in PROMPT_BUILDERS:
+        raise ValueError(f"Prompt strategy '{prompt_type}' not supported.")
+    return PROMPT_BUILDERS[prompt_type](input, data_type, few_shot_examples)
