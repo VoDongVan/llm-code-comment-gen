@@ -1,9 +1,9 @@
 import torch
-from transformers import AutoTokenizer, AutoModel
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 def load_model(model_name="codellama/CodeLlama-7b-Instruct-hf"):
     tokenizer = AutoTokenizer.from_pretrained(model_name, device_map="auto")
-    model = AutoModel.from_pretrained(model_name, device_map="auto")
+    model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto")
     model.eval()
     return model, tokenizer
 
