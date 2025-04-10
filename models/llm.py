@@ -1,5 +1,6 @@
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
+import re
 
 def load_model(model_name="codellama/CodeLlama-7b-Instruct-hf"):
     tokenizer = AutoTokenizer.from_pretrained(model_name, device_map="auto")
@@ -13,7 +14,8 @@ def generate(model, tokenizer, message, max_new_tokens=200):
     inputs = tokenizer(prompt, return_tensors="pt").to(device)
     outputs = model.generate(**inputs, pad_token_id=tokenizer.eos_token_id, max_new_tokens=max_new_tokens)
     decoded = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    return {"role": "assistant", "content": decoded}
+    decoded_cleaned = re.sub(r"\[INST\].*?\[/INST\]", "", decoded, flags=re.DOTALL).strip()
+    return {"role": "assistant", "content": decoded_cleaned}
 
 def generate_comments(model, tokenizer, messages, prompt_type="zero-shot"):
     if prompt_type == "expert":

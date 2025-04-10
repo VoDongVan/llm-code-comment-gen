@@ -1,10 +1,10 @@
 def format_inline_prompt(prev_context, next_context):
-    return f"""This is the previous context of a line:\n{prev_context}\n\n\
-            This is the next context of a line:\n{next_context}\n\n\
-            Generate helpful comments that should be put in the line"""
+    return f"""This is the previous context before a blank line:\n{prev_context}\n\n\
+            This is the next context after a blank line:\n{next_context}\n\n\
+            Generate a helpful inline comment that should be insert in the blank line"""
 
 def format_code_prompt(code):
-    return f"""Generate helpful comments for the following code snippet:\n {code}"""
+    return f"""Generate helpful docstrings for the following code snippet:\n {code}"""
 
 def zero_shot_prompt(input: object, type: str):
     if type == "inline":
