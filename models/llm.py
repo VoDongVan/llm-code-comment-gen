@@ -1,32 +1,40 @@
+import torch
 from transformers import AutoTokenizer, AutoModel
 
 def load_model(model_name="codellama/CodeLlama-7b-Instruct-hf"):
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModel.from_pretrained(model_name)
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    model.to(device)
+    model.eval()
     return model, tokenizer
 
-def generate(model, tokenizer, message):
+def generate(model, tokenizer, message, max_new_tokens=512):
+    device = next(model.parameters()).device
     prompt = tokenizer.apply_chat_template(message, tokenize=False, add_generation_prompt=True)
-    inputs = tokenizer(prompt, return_tensors="pt")
-    response = model.generate(**inputs, pad_token_id=tokenizer.eos_token_id, max_new_tokens=512)
-    response = tokenizer.decode(response[0], skip_special_tokens=True)
-    return response
+    inputs = tokenizer(prompt, return_tensors="pt").to(device)
+    outputs = model.generate(**inputs, pad_token_id=tokenizer.eos_token_id, max_new_tokens=max_new_tokens)
+    decoded = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    return {"role": "assistant", "content": decoded}
 
 def generate_comments(model, tokenizer, messages, prompt_type="zero-shot"):
     if prompt_type == "expert":
         # Generate expert description
-        response = generate(model, tokenizer, messages[0])
-        response = {"role": "system", "content": response}
-        # Generate comment
-        final_message = [response, messages[1]]
-        response = generate(model, tokenizer, final_message)
-        response = {"role": "assistant", "content": response}
+        expert_response = generate(model, tokenizer, [messages[0]])
+        system_message = {"role": "system", "content": expert_response["content"]}
+        # Generate comment with system message
+        final_messages = [system_message, messages[1]]
+        response = generate(model, tokenizer, final_messages)
     else:
-        cur_message = []
+        cur_messages = []
         for message in messages:
-            cur_message.append(message)
-            response = generate(model, tokenizer, cur_message)
-            response = {"role": "assistant", "content": response}
-            cur_message.append(response)
-    comments = response["content"]
-    return comments
+            cur_messages.append(message)
+            response = generate(model, tokenizer, cur_messages)
+            cur_messages.append(response)
+    return response["content"]
+
+if __name__ == "__main__":
+    model, tokenizer = load_model()
+    sample_messages = [{"role": "user", "content": "Generate comments for:\ndef add(a, b): return a + b"}]
+    comment = generate(model, tokenizer, sample_messages)
+    print(comment["content"])
