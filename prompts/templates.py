@@ -109,7 +109,7 @@ def expert_prompt(input: object, type: str):
 
 PROMPT_BUILDERS = {
     "zero-shot": lambda input, data_type, few_shot_examples: zero_shot_prompt(input, data_type),
-    "few-shot": few_shot_prompt,
+    "few-shot": lambda input, data_type, few_shot_examples: few_shot_prompt(input, few_shot_examples, data_type),
     "cot": lambda input, data_type, few_shot_examples: cot_prompt(input, data_type),
     "critique": lambda input, data_type, few_shot_examples: critique_prompt(input, data_type),
     "expert": lambda input, data_type, few_shot_examples: expert_prompt(input, data_type)
