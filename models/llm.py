@@ -5,6 +5,7 @@ import re
 def load_model(model_name="codellama/CodeLlama-7b-Instruct-hf"):
     tokenizer = AutoTokenizer.from_pretrained(model_name, device_map="auto")
     model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto")
+    device = ("cuda" if torch.cuda.is_available() else "cpu")
     model.eval()
     return model, tokenizer
 
