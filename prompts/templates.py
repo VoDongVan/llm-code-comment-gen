@@ -35,7 +35,7 @@ def few_shot_prompt(input: object, few_shot_examples: list, type: str):
             code_fs = example["code"]
             comment = example["comment"]
             prompt += f"Example:\nFunction:\n{code_fs}\n\nComment:\n{comment}\n\n---\n\n"
-        prompt = f"""Here are examples of comments for code snippet:\n{prompt}\n\n""" + format_code_prompt(code)
+        prompt = f"""Here are examples of comments for code snippet:\n{prompt}""" + format_code_prompt(code)
     prompt = {"role": "user", "content": prompt}
     return [prompt]
 
