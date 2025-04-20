@@ -1,10 +1,10 @@
 def format_inline_prompt(prev_context, next_context):
     return f"""This is the previous context before a blank line:\n{prev_context}\n\n\
             This is the next context after a blank line:\n{next_context}\n\n\
-            Generate a helpful inline comment that should be insert in the blank line"""
+            Generate a helpful inline comment that should be insert in the blank line."""
 
 def format_code_prompt(code):
-    return f"""Generate a helpful docstring for the following code snippet:\n{code}"""
+    return f"""Generate a professional docstring for the following code snippet. Do not generate anything other than a docstring:\n{code}"""
 
 def zero_shot_prompt(input: object, type: str):
     if type == "inline":
@@ -35,7 +35,7 @@ def few_shot_prompt(input: object, few_shot_examples: list, type: str):
             code_fs = example["code"]
             comment = example["comment"]
             prompt += f"Example:\nFunction:\n{code_fs}\n\nComment:\n{comment}\n\n---\n\n"
-        prompt = f"""Here are examples of comments for code snippet:\n{prompt}""" + format_code_prompt(code)
+        prompt = f"""Here are examples of code snippet and their docstring:\n{prompt}""" + format_code_prompt(code)
     prompt = {"role": "user", "content": prompt}
     return [prompt]
 
@@ -51,7 +51,7 @@ Answer these questions:\n\
 5. What are private methods?\n\
 6. What are the functionalities of these private methods?\n\
 """
-        prompt2 = f"""From the previous answers, generate a helpful docstring for the code"""
+        prompt2 = f"""Integrate above information generate a professional docstring for the code. Do not generate anything other than a docstring."""
     elif type == "function":
         code = input["code"]
         prompt1 = f"""Analyze the following code snippet:\n{code}\n\n\
@@ -62,7 +62,7 @@ Answer these questions:\n\
 4. What are the main functionalities of this function?\n\
 5. Are there any constraints or specific conditions that a user should be aware of?\n\
 """
-        prompt2 = f"""From the previous answers, generate a helpful docstring for the code"""
+        prompt2 = f"""Integrate above information and generate a professional docstring for the code. Do not generate anything other than a docstring."""
     else:
         prev_context = input["prev_context"]
         next_context = input["next_context"]
@@ -89,14 +89,14 @@ def critique_prompt(input: object, type: str):
         code = input["code"]
         prompt1 = format_code_prompt(code)
     prompt2 = f"""Review and find problems with your answer"""
-    prompt3 = f"""Based on the problems, improve your answer"""
+    prompt3 = f"""Based on the problems that you found, improve your answer"""
     prompt1 = {"role": "user", "content": prompt1}
     prompt2 = {"role": "user", "content": prompt2}
     prompt3 = {"role": "user", "content": prompt3}
     return [prompt1, prompt2, prompt3]
 
 def expert_prompt(input: object, type: str):
-    prompt1 = f"""Describe an experienced software engineer that can write high-quality code comments in second person perspective:\n"""
+    prompt1 = f"""Describe an experienced software engineer that can write high-quality code comments and documentation in second person perspective:\n"""
     if type == "inline":
         prev_context = input["prev_context"]
         next_context = input["next_context"]
